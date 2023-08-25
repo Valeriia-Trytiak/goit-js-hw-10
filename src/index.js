@@ -1,4 +1,10 @@
-import axios from 'axios';
+import { fetchBreeds } from './cat-api.js';
+import { Notify } from 'notiflix/build/notiflix-notify-aio';
+const refs = {
+  breedList: document.querySelector('.breed-select'),
+};
+// console.log(refs.breedList);
 
-axios.defaults.headers.common['x-api-key'] =
-  'live_ A3ZSRujL9i0dmt1zQPz6xhOQWX9GuL do6JWDcBab6VSCSuKeM20Dut29LtXj fc01';
+// function markupList() {}
+
+console.log(fetchBreeds());
