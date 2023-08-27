@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import { fetchBreeds, fetchCatByBreed } from './cat-api.js';
 
@@ -7,12 +6,14 @@ import SlimSelect from 'slim-select';
 const refs = {
   breedList: document.querySelector('.breed-select'),
   container: document.querySelector('.cat-info'),
+  loaderEl: document.querySelector('.loader'),
 };
 
 refs.breedList.addEventListener('change', onChangeBreedList);
 
 fetchBreeds()
   .then(data => {
+    refs.breedList.classList.replace('breed-select-hidden', 'breed-select');
     createOption(data);
     refs.breedList.insertAdjacentHTML('beforeend', createOption(data));
 
@@ -20,12 +21,18 @@ fetchBreeds()
       select: refs.breedList,
       settings: {
         placeholderText: 'Please, select a cat breed',
+        // пошук
+        searchText: 'Sorry nothing to see here',
+        searchPlaceholder: 'Search your favorite breeds!',
+        searchHighlight: true,
       },
     });
   })
   .catch(error => {
-    console.log(error);
-    Notify.failure(`${error.message}`);
+    Notify.failure(`Oops! Something went wrong! Try reloading the page!`);
+  })
+  .finally(() => {
+    refs.loaderEl.classList.replace('loader', 'loader-hidden');
   });
 
 function createOption(arr) {
@@ -37,24 +44,25 @@ function createOption(arr) {
 }
 
 function onChangeBreedList(evt) {
-  console.log(evt.target.value);
   fetchCatByBreed(evt.target.value)
     .then(data => {
-      console.dir(data);
+      refs.container.classList.replace('cat-info-hidden', 'cat-info');
       createCarts(data);
-      refs.container.insertAdjacentHTML('beforeend', createCarts(data));
+      refs.container.innerHTML = createCarts(data);
     })
     .catch(error => {
-      console.log(error);
-      Notify.failure(`${error.message}`);
+      Notify.failure(`Oops! Something went wrong! Try reloading the page!`);
+    })
+    .finally(() => {
+      refs.loaderEl.classList.replace('loader', 'loader-hidden');
     });
 }
 
 function createCarts(arr) {
   const { url } = arr[0];
   const { name: nameCat, description, temperament } = arr[0].breeds[0];
-  return `<img src="${url}" alt="${nameCat}" />
-<h2>${nameCat}</h2>
-<p>${description}</p>
-<p><span>Temperament:</span> ${temperament}</p>`;
+  return `<img class= "cat-foto" src="${url}" alt="${nameCat}" width="300" />
+<div class = "thumb"><h2 class="cat title">${nameCat}</h2>
+<p class ="cat description">${description}</p>
+<p class = "cat temperament"><span class= "pick-out-text">Temperament:</span> ${temperament}</p></div>`;
 }
