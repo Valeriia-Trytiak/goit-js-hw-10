@@ -52,6 +52,7 @@ function onChangeBreedList(evt) {
     })
     .catch(error => {
       Notify.failure(`Oops! Something went wrong! Try reloading the page!`);
+      refs.container.classList.replace('cat-info', 'cat-info-hidden');
     })
     .finally(() => {
       refs.loaderEl.classList.replace('loader', 'loader-hidden');
